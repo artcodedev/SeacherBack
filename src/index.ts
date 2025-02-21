@@ -24,7 +24,7 @@ import { Data, GLOBAL_BD, GLOBAL_BD_data, MoveData, SearchData, SelectedData, To
 import profile from './DATA/profile.json';
 
 const app: Express = express();
-const port: number = 3000;
+const port: number = 3001;
 
 app.use(bodyParser.json());
 
