@@ -14,14 +14,13 @@ import { Token } from "./Utils/Token";
 import { SecretKey } from "./Secure/SecretKey";
 
 /*
- *** Utils
+ *** Models
 */
 import { Data, GLOBAL_BD, GLOBAL_BD_data, MoveData, SearchData, SelectedData, Token_t, OffsetData } from './Models/Models'
 
 /*
  *** Json data
 */
-import DATA from './DATA/DATA.json';
 import profile from './DATA/profile.json';
 
 const app: Express = express();
@@ -37,12 +36,40 @@ const G_BD: GLOBAL_BD = {
 }
 
 /*
+*** Set data for users
+*/
+class DataUsersId {
+
+    public static getData(): Data[] {
+
+        const data: Data[] = [];
+
+        for (let i = 0; i < 1000001; i++) {
+            data.push({
+                id: i,
+                name: 'test name',
+                age: 20
+            })
+        }
+
+        return  data;
+
+    }
+}
+
+/*
+*** Global data
+*/
+const DATA: {data: Data[]} = {
+    data: DataUsersId.getData()
+}
+
+/*
 *** All utils class
 */
 class FounterDB {
 
     public static async getDataTokenIndex(token: string): Promise<number | null> {
-
 
         for (let i = 0; i < G_BD.data.length; i++) {
 
@@ -107,7 +134,7 @@ class GetData {
     /*
       *** Get data use token
     */
-    public static async getData(req: Request, res: Response): Promise<void>{
+    public static async getData(req: Request, res: Response): Promise<void> {
         try {
 
             const data: { token: string } = req.body;
@@ -171,7 +198,7 @@ class Sorted {
                     const sorted_elems: Data[] = G_BD.data[index].data.sort((x, y) => x.id - y.id);
 
                     G_BD.data[index].data = data.sorted ? sorted_elems.reverse() : sorted_elems;
-                    
+
                     console.log(G_BD.data[index].profile.selected)
 
                     res.status(200).json({ error: "Set sorted is update" });
@@ -211,7 +238,7 @@ class Move {
 
                 if (index != null) {
 
-                    const new_data: Data[] = await Move.moveElementInArray(G_BD.data[index].data, data.draggingRow,  data.hoveredRow);
+                    const new_data: Data[] = await Move.moveElementInArray(G_BD.data[index].data, data.draggingRow, data.hoveredRow);
 
                     G_BD.data[index].data = new_data;
 
@@ -243,16 +270,20 @@ class Search {
 
                 const index = await FounterDB.getDataTokenIndex(data.token);
 
-                const data_search: Data[] = [];
+                let data_search: Data[] = [];
 
                 if (index != null) {
 
-                    for (let i = 0; i < DATA.data.length; i++) {
+                    if (data.query != null) {
 
-                        const sr: Data = DATA.data[i];
-    
-                        if (sr.name.indexOf(data.query) != -1) data_search.push(sr)
-                    }
+                        for (let i = 0; i < DATA.data.length; i++) {
+
+                            const sr: Data = DATA.data[i];
+
+                            if (sr.id == data.query) data_search.push(sr);
+
+                        }
+                    } else {data_search = DATA.data;}
 
                     G_BD.data[index].profile.search = data.query;
                     G_BD.data[index].data = data_search;
@@ -327,7 +358,7 @@ class Offset {
 
                 if (index != null) {
 
-                    res.status(200).json({ 
+                    res.status(200).json({
                         data: G_BD.data[index].data.slice(data.offset, data.offset + 20)
                     });
 
@@ -343,13 +374,13 @@ class Offset {
         catch (error) {
             res.status(500).json({ error: "Error in server" });
         }
-    } 
+    }
 }
 
 class Test {
 
     public static async test(req: Request, res: Response): Promise<void> {
-        res.status(200).json({data: G_BD.data});
+        res.status(200).json({ data: G_BD.data });
     }
 }
 

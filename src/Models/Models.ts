@@ -5,7 +5,7 @@
 export interface Profile {
     selected: IMap<boolean>;
     sorted: number | null;
-    search: string;
+    search: number | null;
 }
 
 export interface Data {
@@ -37,7 +37,7 @@ export interface MoveData {
 
 export interface SearchData {
     token: string
-    query: string
+    query: number
 }
 export interface IMap<T> {
     [index: number]: T;
