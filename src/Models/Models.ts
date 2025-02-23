@@ -3,7 +3,7 @@
 */
 
 export interface Profile {
-    selected: IMap<boolean>;
+    selected: string[];
     sorted: number | null;
     search: number | null;
 }
@@ -45,7 +45,7 @@ export interface IMap<T> {
 
 export interface SelectedData {
     token: string
-    selected: IMap<boolean>
+    selected: string
 }
 
 export interface OffsetData {

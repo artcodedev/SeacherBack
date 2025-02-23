@@ -5,6 +5,7 @@
 */
 import express, { Express, Request, Response } from "express";
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 /*
  *** Utils
@@ -26,6 +27,7 @@ import profile from './DATA/profile.json';
 const app: Express = express();
 const port: number = 3001;
 
+app.use((cors as (options: cors.CorsOptions) => express.RequestHandler)({}));
 app.use(bodyParser.json());
 
 /*
@@ -221,7 +223,7 @@ class Move {
 
         const element: Data = arr.splice(fromIndex, 1)[0];
 
-        arr.splice(toIndex, 0, element)
+        arr.splice(toIndex, 0, element);
 
         return arr;
     }
@@ -263,7 +265,6 @@ class Search {
 
         try {
 
-
             const data: SearchData = req.body;
 
             if (data) {
@@ -280,10 +281,10 @@ class Search {
 
                             const sr: Data = DATA.data[i];
 
-                            if (sr.id == data.query) data_search.push(sr);
+                            if (sr.id.toString().indexOf(data.query.toString()) != -1) data_search.push(sr);
 
                         }
-                    } else {data_search = DATA.data;}
+                    } else { data_search = DATA.data; }
 
                     G_BD.data[index].profile.search = data.query;
                     G_BD.data[index].data = data_search;
@@ -324,9 +325,25 @@ class Selected {
 
                 if (index != null) {
 
-                    G_BD.data[index].profile.selected = data.selected
+                    const db_selected: string[]= G_BD.data[index].profile.selected;
 
-                    res.status(200).json({ message: "selected is update" });
+                    if (db_selected.includes(data.selected)) {
+
+                        for (let i = 0; i < db_selected.length; i++) {
+
+                            if (db_selected[i] === data.selected) {
+
+                                db_selected.splice(i, 1);
+
+                                break
+
+                            }
+                        }
+                    } else {db_selected.push(data.selected);}
+
+                    G_BD.data[index].profile.selected = db_selected;
+
+                    res.status(200).json({ db_selected: db_selected });
 
                 }
 
