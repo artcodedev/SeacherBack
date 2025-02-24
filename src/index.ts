@@ -60,7 +60,7 @@ class DataUsersId {
 }
 
 /*
-*** Global data
+*** Global data (fake DB)
 */
 const DATA: {data: Data[]} = {
     data: DataUsersId.getData()
